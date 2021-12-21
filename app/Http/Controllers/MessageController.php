@@ -9,12 +9,12 @@ use App\Models\User;
 
 class MessageController extends Controller
 {
-    public function send(SendMessageRequest $request, int $id, bool $is_group)
+    public function send(SendMessageRequest $request, int $id, bool $is_group): void
     {
         if ($is_group) {
-            $recepient = Group::query()->findOrFail($id);
+            Group::query()->findOrFail($id);
         } else {
-            $recepient = User::query()->findOrFail($id);
+            User::query()->findOrFail($id);
         }
 
         SendMessage::dispatchAfterResponse($request->validated()['text'], $id, $is_group);

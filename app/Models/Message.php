@@ -9,5 +9,5 @@ class Message extends Model
 {
     use HasFactory;
 
-    public $timestamps = false;
+    public bool $timestamps = false;
 }
