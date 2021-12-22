@@ -88,7 +88,7 @@
 
                         function ready() {
 
-                            Echo.channel('test')
+                            Echo.private('message.to.{{ $user_id }}')
                                 .listen(".NewMessageEvent", e => {
                                     console.log(e);
                                 })

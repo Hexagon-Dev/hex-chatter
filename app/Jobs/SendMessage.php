@@ -45,7 +45,7 @@ class SendMessage
             'message' => $this->text,
         ]);
 
-        event(new NewMessageNotification($this->text));
+        event(new NewMessageNotification($this->text, $this->id));
 
         Log::debug('Message sent');
     }
