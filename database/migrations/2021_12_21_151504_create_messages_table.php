@@ -18,7 +18,7 @@ class CreateMessagesTable extends Migration
             $table->integer('receiver');
             $table->boolean('is_group');
             $table->text('message');
-            $table->timestamp('sent_at');
+            $table->timestamp('sent_at')->default(now()->timestamp);
         });
     }
 

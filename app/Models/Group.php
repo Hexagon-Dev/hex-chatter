@@ -10,4 +10,6 @@ class Group extends Model
     use HasFactory;
 
     public bool $timestamps = false;
+    public $table = 'group';
+    public $guarded = [];
 }

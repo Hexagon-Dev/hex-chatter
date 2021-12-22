@@ -10,4 +10,6 @@ class Message extends Model
     use HasFactory;
 
     public bool $timestamps = false;
+
+    public $guarded = [];
 }

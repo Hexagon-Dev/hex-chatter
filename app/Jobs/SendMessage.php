@@ -2,44 +2,51 @@
 
 namespace App\Jobs;
 
+use App\Events\NewMessageNotification;
 use App\Models\Message;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
-class SendMessage implements ShouldQueue
+class SendMessage
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    public string $text;
+    public int $id;
+    public bool $is_group;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(string $text, int $id, bool $is_group)
     {
-        //
+        $this->text = $text;
+        $this->id = $id;
+        $this->is_group = $is_group;
     }
 
     /**
      * Execute the job.
      *
-     * @param string $text
-     * @param int $id
-     * @param bool $is_group
      * @return void
      */
-    public function handle(string $text, int $id, bool $is_group): void
+    public function handle(): void
     {
-        Message::query()->insert([
-            'receiver' => $id,
-            'is_group' => $is_group,
-            'message' => $text,
-            'sent_at' => now()->timestamp,
+        $message = new Message;
+        $message->query()->insert([
+            'receiver' => $this->id,
+            'is_group' => $this->is_group,
+            'message' => $this->text,
         ]);
 
-        // TODO: Broadcast to recipients the message
+        event(new NewMessageNotification($this->text));
+
+        Log::debug('Message sent');
     }
 }
