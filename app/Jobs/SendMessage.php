@@ -4,8 +4,8 @@ namespace App\Jobs;
 
 use App\Events\NewMessageNotification;
 use App\Models\Message;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -45,7 +45,7 @@ class SendMessage
             'message' => $this->text,
         ]);
 
-        event(new NewMessageNotification($this->text, $this->id));
+        event(new NewMessageNotification($this->text, User::query()->where('id', $this->id)->firstOrFail()->toArray()['name'], $this->id)   );
 
         Log::debug('Message sent');
     }

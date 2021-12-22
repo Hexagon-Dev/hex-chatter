@@ -5,18 +5,28 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
+    <div class="pt-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
-                    <div id="app" class="mb-4">
-                        <div class="content">
-                            <div class="m-b-md">
-                                New notification will be alerted realtime!
-                            </div>
+                    <div class="mb-4">New notifications will be alerted realtime!</div>
+                    <div id="notification-container">
+                        <!--
+                        <div class="p-6 mr-auto bg-white rounded-xl shadow-lg w-96">
+                            <div class="text-xl font-medium text-black">Test</div>
+                            <p class="text-gray-500">Message</p>
                         </div>
+                        -->
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <div class="pt-6">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 bg-white border-b border-gray-200">
                     <form>
                         <div class="col-span-6 sm:col-span-3 mb-4">
                             <label for="recipient" class="block text-sm font-medium text-gray-700">Recipient</label>
@@ -42,7 +52,7 @@
                         <div class="mt-3 text-center">
                             <div id="round" class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
                                 <svg
-                                    class="h-6 w-6 bg-green-600"
+                                    class="h-6 w-6 bg-green-100"
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
@@ -73,6 +83,7 @@
                     <script>
                         let modal = document.getElementById("my-modal");
                         let button = document.getElementById("ok-btn");
+                        let notification_container = document.getElementById("notification-container");
 
                         button.onclick = function() {
                             modal.style.display = "none";
@@ -90,6 +101,7 @@
 
                             Echo.private('message.to.{{ $user_id }}')
                                 .listen(".NewMessageEvent", e => {
+                                    notification_container.innerHTML += "<div class=\"p-6 mt-2 mr-auto bg-white rounded-xl shadow-lg w-96\"><div class=\"text-xl font-medium text-black\">" + e.username + "</div><p class=\"text-gray-500\">" + e.message + "</p></div>";
                                     console.log(e);
                                 })
                         }
