@@ -12,4 +12,9 @@ class Message extends Model
     public bool $timestamps = false;
 
     public $guarded = [];
+
+    public function setSentAtAttribute(): void
+    {
+        $this->attributes['sent_at'] = now()->timestamp;
+    }
 }

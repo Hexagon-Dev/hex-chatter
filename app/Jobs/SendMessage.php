@@ -16,7 +16,8 @@ class SendMessage
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public string $text;
-    public int $id;
+    public int $sender_id;
+    public int $recipient_id;
     public bool $is_group;
 
     /**
@@ -24,10 +25,11 @@ class SendMessage
      *
      * @return void
      */
-    public function __construct(string $text, int $id, bool $is_group)
+    public function __construct(string $text, int $sender_id, int $recipient_id, bool $is_group)
     {
         $this->text = $text;
-        $this->id = $id;
+        $this->sender_id = $sender_id;
+        $this->recipient_id = $recipient_id;
         $this->is_group = $is_group;
     }
 
@@ -40,12 +42,13 @@ class SendMessage
     {
         $message = new Message;
         $message->query()->insert([
-            'receiver' => $this->id,
+            'sender' => $this->sender_id,
+            'receiver' => $this->recipient_id,
             'is_group' => $this->is_group,
             'message' => $this->text,
         ]);
 
-        event(new NewMessageNotification($this->text, User::query()->where('id', $this->id)->firstOrFail()->toArray()['name'], $this->id)   );
+        event(new NewMessageNotification($this->text, User::query()->where('id', $this->recipient_id)->firstOrFail()->toArray()['name'], now()->toDateTimeString(), $this->recipient_id));
 
         Log::debug('Message sent');
     }
