@@ -25,12 +25,12 @@
     </div>
 
     <script>
-        function renderMessage(message, date, owner) {
+        function renderMessage(message, date, sender, owner) {
             let style = "mr-auto";
 
             if (owner) style = "ml-auto";
 
-            notification_container.innerHTML += "<div class=\"p-4 m-4 " + style + " bg-indigo-50 rounded-xl shadow-sm border border-gray-300 w-96\"><p class=\"text-black\">" + message + "</p><p class=\"text-gray-400 text-xs\">" + date + "</p></div>";
+            notification_container.innerHTML += "<div class=\"p-4 m-4 " + style + " bg-indigo-50 rounded-xl shadow-sm border border-gray-300 w-96\"><p class=\"mb-2 font-bold\">" + sender + "</p><p class=\"text-black mb-2\">" + message + "</p><p class=\"text-gray-400 text-xs\">" + date + "</p></div>";
             scroll.scrollTop = scroll.scrollHeight;
         }
 
@@ -43,13 +43,14 @@
 
             Echo.private('message.to.{{ $user_id }}')
                 .listen(".NewMessageEvent", e => {
-                    renderMessage(e.message, e.datetime, false);
+                    renderMessage(e.message, e.datetime, e.sender, false);
                     console.log(e);
                 })
 
             Echo.channel('message.group.{{ $recipient_id }}')
                 .listen(".NewMessageEvent", e => {
-                    renderMessage(e.message, e.datetime, false);
+                    if (e.sender_id !== {{ Auth::id() }}) renderMessage(e.message, e.datetime, e.sender, false);
+                    else renderMessage(e.message, e.datetime, e.sender, true);
                     console.log(e);
                 })
         }
@@ -77,12 +78,14 @@
                     modal.style.display = "block";
                 }
             });
-            if (message) renderMessage(message, new Date().toISOString().slice(0, 19).replace('T', ' '), true);
+
+            if (message.is_group) renderMessage(message, new Date().toISOString().slice(0, 19).replace('T', ' '), message.sender, true);
+
             $('#message').val('');
         });
 
         @foreach($messages as $message)
-        renderMessage("{{ $message['message'] }}", "{{ $message['sent_at'] }}", {{ $message['sender'] === $user_id }});
+        renderMessage("{{ $message['message'] }}", "{{ $message['sent_at'] }}", "{{ isset($message['sender_name']) ? $message['sender_name'] : 'none' }}", {{ $message['sender'] === $user_id }});
         @endforeach
     </script>
 @endsection

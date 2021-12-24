@@ -20,9 +20,16 @@
                     <form>
                         @csrf
                         @foreach($data as $user)
+                            @if($user['id'] === Auth::id())
+                                @continue
+                            @endif
                             <a href="/messenger/{{ $user['name'] }}">
                                 <div class="border border-gray-300 hover:bg-gray-100 transition duration-300 mb-4 p-4 mx-auto bg-white rounded-xl shadow-lg flex space-between items-center">
-                                    <input type="checkbox" id="{{ $user['id'] }}" name="user_id[]" value="{{ $user['id'] }}" class="mr-4 h-6 w-6">
+                                    @if(!isset($user['is_group']))
+                                        <input type="checkbox" id="{{ $user['id'] }}" name="user_id[]" value="{{ $user['id'] }}" class="mr-4 h-6 w-6">
+                                    @else
+                                        <div class="w-10"></div>
+                                    @endif
                                     <div class="mr-auto">
                                         <p class="text-lg text-black font-semibold inline-block">{{ $user['name'] }}</p>
                                         <p class="text-lg text-gray-500 font-semibold">{{ $user['message'] }}</p>

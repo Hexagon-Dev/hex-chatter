@@ -26,12 +26,12 @@ class SendMessage
      *
      * @return void
      */
-    public function __construct(string $text, int $sender_id, int $recipient_id, bool $is_group)
+    public function __construct(array $data)
     {
-        $this->text = $text;
-        $this->sender_id = $sender_id;
-        $this->recipient_id = $recipient_id;
-        $this->is_group = $is_group;
+        $this->text = $data['text'];
+        $this->sender_id = $data['sender_id'];
+        $this->recipient_id = $data['recipient_id'];
+        $this->is_group = $data['is_group'];
     }
 
     /**
@@ -50,12 +50,24 @@ class SendMessage
         ]);
 
         if ($this->is_group) {
-            $name = Group::query()->where('id', $this->recipient_id)->firstOrFail()->toArray()['name'];
+            $recipient_name = Group::query()->where('id', $this->recipient_id)->firstOrFail()->toArray()['name'];
         } else {
-            $name = User::query()->where('id', $this->recipient_id)->firstOrFail()->toArray()['name'];
+            $recipient_name = User::query()->where('id', $this->recipient_id)->firstOrFail()->toArray()['name'];
         }
 
-        event(new NewMessageNotification($this->text, $name, now()->toDateTimeString(), $this->recipient_id, $this->is_group));
+        $sender_name = User::query()->where('id', $this->sender_id)->firstOrFail()->toArray()['name'];
+
+        $data = [
+            'text' => $this->text,
+            'sender_id' => $this->sender_id,
+            'recipient_id' => $this->recipient_id,
+            'recipient_name' => $recipient_name,
+            'sender_name' => $sender_name,
+            'datetime' => now()->toDateTimeString(),
+            'is_group' => $this->is_group,
+        ];
+
+        event(new NewMessageNotification($data));
 
         Log::debug('Message sent');
     }
