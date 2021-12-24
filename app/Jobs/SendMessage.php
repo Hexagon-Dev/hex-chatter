@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Events\NewMessageNotification;
+use App\Models\Group;
 use App\Models\Message;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
@@ -48,7 +49,13 @@ class SendMessage
             'message' => $this->text,
         ]);
 
-        event(new NewMessageNotification($this->text, User::query()->where('id', $this->recipient_id)->firstOrFail()->toArray()['name'], now()->toDateTimeString(), $this->recipient_id));
+        if ($this->is_group) {
+            $name = Group::query()->where('id', $this->recipient_id)->firstOrFail()->toArray()['name'];
+        } else {
+            $name = User::query()->where('id', $this->recipient_id)->firstOrFail()->toArray()['name'];
+        }
+
+        event(new NewMessageNotification($this->text, $name, now()->toDateTimeString(), $this->recipient_id, $this->is_group));
 
         Log::debug('Message sent');
     }

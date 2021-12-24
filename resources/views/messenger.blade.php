@@ -24,54 +24,18 @@
         </div>
     </div>
 
-    <div class="fixed hidden inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="my-modal">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div class="mt-3 text-center">
-                <div id="round" class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="height: 40px;width: 40px;">
-                        <line x1="10" y1="10" x2="30" y2="30" stroke="red" stroke-width="5" />
-                        <line x1="30" y1="10" x2="10" y2="30" stroke="red" stroke-width="5" />
-                    </svg>
-                </div>
-                <h3 class="mt-2 text-lg leading-6 font-medium text-gray-900" id="modal-title"></h3>
-                <div class="mt-2 px-7 py-3">
-                    <p class="text-sm text-gray-500" id="modal-text"></p>
-                </div>
-                <div class="items-center px-4 py-3">
-                    <button id="ok-btn" class="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300 duration-200">
-                        OK
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    <script src="{{ asset('js/app.js') }}" defer></script>
     <script>
         function renderMessage(message, date, owner) {
             let style = "mr-auto";
 
-            if (owner) {
-                style = "ml-auto";
-            }
+            if (owner) style = "ml-auto";
+
             notification_container.innerHTML += "<div class=\"p-4 m-4 " + style + " bg-indigo-50 rounded-xl shadow-sm border border-gray-300 w-96\"><p class=\"text-black\">" + message + "</p><p class=\"text-gray-400 text-xs\">" + date + "</p></div>";
             scroll.scrollTop = scroll.scrollHeight;
         }
 
-        let modal = document.getElementById("my-modal");
-        let button = document.getElementById("ok-btn");
         let notification_container = document.getElementById("notification-container");
         let scroll = document.getElementById("scroll");
-
-        button.onclick = function() {
-            modal.style.display = "none";
-        }
-
-        window.onclick = function(event) {
-            if (event.target === modal) {
-                modal.style.display = "none";
-            }
-        }
 
         document.addEventListener("DOMContentLoaded", ready);
 
@@ -82,13 +46,14 @@
                     renderMessage(e.message, e.datetime, false);
                     console.log(e);
                 })
+
+            Echo.channel('message.group.{{ $recipient_id }}')
+                .listen(".NewMessageEvent", e => {
+                    renderMessage(e.message, e.datetime, false);
+                    console.log(e);
+                })
         }
 
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
 
         $(".btn-submit").click(function(e){
 
@@ -113,6 +78,7 @@
                 }
             });
             if (message) renderMessage(message, new Date().toISOString().slice(0, 19).replace('T', ' '), true);
+            $('#message').val('');
         });
 
         @foreach($messages as $message)

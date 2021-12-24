@@ -11,11 +11,11 @@ class CreateGroupTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('group', function (Blueprint $table) {
+        Schema::create('group', static function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->string('name');
         });
     }
 
@@ -24,7 +24,7 @@ class CreateGroupTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('group');
     }
