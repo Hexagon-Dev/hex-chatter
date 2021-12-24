@@ -81,9 +81,11 @@
                     modal.style.display = "block";
                 }
             });
-
-            if (message) renderMessage(message, new Date().toISOString().slice(0, 19).replace('T', ' '), "{{ Auth::user()->name }}", true);
-
+            if ("{{ $is_group }}" == 1) {
+                if (message.groupq) renderMessage(message, new Date().toISOString().slice(0, 19).replace('T', ' '), "{{ Auth::user()->name }}", true);
+            } else {
+                if (message) renderMessage(message, new Date().toISOString().slice(0, 19).replace('T', ' '), "{{ Auth::user()->name }}", true);
+            }
             $('#message').val('');
         });
 
