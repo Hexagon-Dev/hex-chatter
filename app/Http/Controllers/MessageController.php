@@ -42,6 +42,7 @@ class MessageController extends Controller
                 'name' => $group['name'],
                 'message' => $last_message['message'],
                 'date' => $last_message['sent_at'],
+                'is_group' => true,
             ];
         }
 
@@ -117,6 +118,11 @@ class MessageController extends Controller
         ];
     }
 
+    public function getUsername(int $id)
+    {
+        return User::query()->where('id', $id)->get('name')->toArray()[0]['name'];
+    }
+
     public function getMessages(string $recipient)
     {
         $user_id = Auth::id();
@@ -135,6 +141,9 @@ class MessageController extends Controller
                 ->where('is_group', true)
                 ->get()
                 ->toArray();
+            foreach ($sender_messages as $key => $sender_message) {
+                $sender_messages[$key]['sender_name'] = $this->getUsername($sender_message['sender']);
+            }
             $recipient_messages = [];
         } else {
             $sender_messages = Message::query()
@@ -142,11 +151,17 @@ class MessageController extends Controller
                 ->where('receiver', $recipient_id)
                 ->get()
                 ->toArray();
+            foreach ($sender_messages as $key => $sender_message) {
+                $sender_messages[$key]['sender_name'] = $this->getUsername($sender_message['sender']);
+            }
             $recipient_messages = Message::query()
                 ->where('sender', $recipient_id)
                 ->where('receiver', $user_id)
                 ->get()
                 ->toArray();
+            foreach ($recipient_messages as $key => $recipient_message) {
+                $recipient_messages[$key]['sender_name'] = $this->getUsername($recipient_message['sender']);
+            }
         }
 
         $messages = array_merge($sender_messages, $recipient_messages);
@@ -167,6 +182,7 @@ class MessageController extends Controller
             'recipient_id' => $recipient_id,
             'recipient_name' => $recipient,
             'messages' => $messages,
+            'is_group' => $is_group,
             ];
 
         return view('messenger', $data);
@@ -183,7 +199,14 @@ class MessageController extends Controller
             User::query()->findOrFail($recipient_id);
         }
 
-        SendMessage::dispatchSync($request->validated()['message'], Auth::id(), $recipient_id, $is_group);
+        $data = [
+            'text' => $request->validated()['message'],
+            'sender_id' => Auth::id(),
+            'recipient_id' => $recipient_id,
+            'is_group' => $is_group,
+        ];
+
+        SendMessage::dispatchSync($data);
 
         return response()->json(['message' => 'Message sent'], Response::HTTP_OK);
     }
