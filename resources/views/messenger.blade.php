@@ -54,7 +54,6 @@
                         renderMessage(e.message, e.datetime, e.sender, false);
                         console.log(e);
                     });
-                console.log(Echo);
             }
         }
 
