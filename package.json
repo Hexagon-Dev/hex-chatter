@@ -1,0 +1,39 @@
+{
+    "type": "module",
+    "name": "hex-chatter",
+    "author": {
+        "name": "Vladyslav Rudakevych",
+        "email": "hexagon.dev.ua@gmail.com",
+        "url": "https://hexdev.me"
+    },
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build"
+    },
+    "devDependencies": {
+        "autoprefixer": "^10.4.16",
+        "axios": "^1.6.1",
+        "laravel-vite-plugin": "^1.0.0",
+        "postcss": "^8.4.32",
+        "tailwindcss": "^3.4.0",
+        "unplugin-vue-components": "^0.26.0",
+        "vite": "^5.0.0",
+        "vue": "^3.4.13"
+    },
+    "dependencies": {
+        "@fortawesome/fontawesome-svg-core": "^6.5.1",
+        "@fortawesome/free-regular-svg-icons": "^6.5.1",
+        "@fortawesome/free-solid-svg-icons": "^6.5.1",
+        "@fortawesome/vue-fontawesome": "^3.0.5",
+        "@vitejs/plugin-vue": "^4.5.2",
+        "@vueuse/core": "^10.7.1",
+        "date-fns": "^3.2.0",
+        "laravel-echo": "^1.15.3",
+        "pinia": "^2.1.7",
+        "pinia-plugin-persistedstate": "^3.2.0",
+        "primevue": "^3.45.0",
+        "socket.io-client": "^2.5.0",
+        "vue-resize": "^2.0.0-alpha.1",
+        "vue-router": "^4.2.5"
+    }
+}
